@@ -35,6 +35,7 @@ along with Darling.  If not, see <http://www.gnu.org/licenses/>.
 #include <mcheck.h>
 #include <libgen.h>
 #include "dyld.h"
+#include "ld.h"
 
 char g_darwin_executable_path[4096] = "";
 char g_dyld_path[4096] = "";
@@ -69,7 +70,7 @@ int main(int argc, char** argv, char** envp)
 			"\tDYLD_BIND_AT_LAUNCH=1 - force dyld to bind all lazy references on startup\n";
 		return 1;
 	}
-	
+
 	try
 	{
 		if (!::realpath(argv[0], g_dyld_path))
@@ -88,7 +89,7 @@ int main(int argc, char** argv, char** envp)
 				return 0;
 			}
 		}
-		
+        initLD();
 		setupDyldPath(argv[0]);
 		// sets up @executable_path
 		setupExecutablePath(argv[1]);

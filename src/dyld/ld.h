@@ -48,7 +48,7 @@ typedef void* NSModule;
 
 extern "C"
 {
-
+void initLD();
 void* __darwin_dlopen(const char* filename, int flag);
 int __darwin_dlclose(void* handle);
 const char* __darwin_dlerror(void);

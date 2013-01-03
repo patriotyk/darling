@@ -68,7 +68,7 @@ static IniConfig* g_iniConfig = 0;
 
 static void* attemptDlopen(const char* filename, int flag);
 static int translateFlags(int flags);
-__attribute__((constructor)) static void initLD();
+//__attribute__((constructor)) static void initLD();
 static std::list<Darling::DlsymHookFunc> g_dlsymHooks;
 
 extern MachOLoader* g_loader;
@@ -121,7 +121,7 @@ static void findSearchpathsWildcard(std::string ldconfig_file_pattern)
 	globfree(&globbuf);
 }
 
-static void initLD()
+void initLD()
 {
 	//int rv = regcomp(&g_reAutoMappable, "/(lib[[:alnum:]\\-]+)\\.([[:digit:]]+)(\\.[[:digit:]]+)?\\.dylib", REG_EXTENDED);
 	int rv = regcomp(&g_reAutoMappable, "/(lib[[:alnum:]\\-]+)\\.(.+)\\.dylib", REG_EXTENDED);
