@@ -1,7 +1,7 @@
 /*
 This file is part of Darling.
 
-Copyright (C) 2012 Lubos Dolezel
+Copyright (C) 2012-2013 Lubos Dolezel
 Copyright (C) 2011 Shinichiro Hamaji
 
 Darling is free software: you can redistribute it and/or modify
@@ -57,15 +57,17 @@ int main(int argc, char** argv, char** envp)
 	if (argc == 1)
 	{
 		std::cerr << "This is Darling dyld for " ARCH_NAME ".\n";
-		std::cerr << "Copyright (C) 2012 Lubos Dolezel\n"
+		std::cerr << "Copyright (C) 2012-2013 Lubos Dolezel\n"
 			"Copyright (C) 2011 Shinichiro Hamaji\n\n";
 		
 		std::cerr << "Usage: " << argv[0] << " program-path [arguments...]\n\n";
 		std::cerr << "Environment variables:\n"
 			"\tDYLD_DEBUG=1 - enable debug info (lots of output)\n"
-			"\tDYLD_IGN_MISSING_SYMS=1 - replace missing symbol references with a stub function\n"
 			"\tDYLD_MTRACE=1 - enable mtrace\n"
+#ifdef DEBUG
+			"\tDYLD_IGN_MISSING_SYMS=1 - replace missing symbol references with a stub function\n"
 			"\tDYLD_TRAMPOLINE=1 - access all bound functions via a debug trampoline\n"
+#endif
 			"\tDYLD_ROOT_PATH=<path> - set the base for library path resolution (overrides autodetection)\n"
 			"\tDYLD_BIND_AT_LAUNCH=1 - force dyld to bind all lazy references on startup\n";
 		return 1;

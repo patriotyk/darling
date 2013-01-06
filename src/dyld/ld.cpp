@@ -42,7 +42,6 @@ along with Darling.  If not, see <http://www.gnu.org/licenses/>.
 #include <list>
 #include <algorithm>
 #include <execinfo.h>
-#include "GDBInterface.h"
 #include "dyld.h"
 #include <glob.h>
 
@@ -263,6 +262,13 @@ void* Darling::DlopenWithContext(const char* filename, int flag, const std::vect
 			
 			}
 		}
+		
+		// Unlike ld-linux, dyld seems to search in . too
+		if (!strchr(filename, '/'))
+		{
+			if (::access(filename, R_OK) == 0)
+				RET_IF( attemptDlopen(filename, flag) );
+		}
 	}
 	
 	if (!g_ldError[0])
@@ -406,15 +412,13 @@ void* attemptDlopen(const char* filename, int flag)
 				// Insert an entry before doing the full load to prevent recursive loading
 				g_ldLibraries[name] = lib;
 
-				lib->exports = new Exports;
-
-#ifdef DEBUG
-				g_loader->load(*machO, name, lib->exports, nobind, lazy, &lib->elf);
-
-				GDBInterface::addELF(&lib->elf);
-#else
-				g_loader->load(*machO, name, lib->exports, nobind, lazy);
-#endif
+				//if (!global)
+				//{
+					lib->exports = new Exports;
+					g_loader->load(*machO, name, lib->exports, nobind, lazy);
+				//}
+				//else
+				//	g_loader->load(*machO, name, 0, nobind, lazy);
 				
 				if (!nobind)
 				{

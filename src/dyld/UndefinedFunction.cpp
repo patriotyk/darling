@@ -1,7 +1,7 @@
 /*
 This file is part of Darling.
 
-Copyright (C) 2012 Lubos Dolezel
+Copyright (C) 2012-2013 Lubos Dolezel
 
 Darling is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -57,18 +57,15 @@ void* UndefMgr::generateNew(const char* name)
 
 void UndefinedFunction::init(const char* name)
 {
+#if defined(__x86_64__)
 	_asm1[0] = 0x48;
 	_asm1[1] = 0xbf;
-	pStderr = stderr;
 	_asm2[0] = 0x48;
 	_asm2[1] = 0xbe;
-	pErrMsg = "Undefined function called: %s\n";
 	_asm3[0] = 0x48;
 	_asm3[1] = 0xba;
-	pFuncName = name;
 	_asm4[0] = 0x48;
 	_asm4[1] = 0xbb;
-	pFprintf = dlsym(RTLD_DEFAULT, "fprintf");
 	_asm5[0] = 0x48;
 	_asm5[1] = 0x31;
 	_asm5[2] = 0xc0;
@@ -78,6 +75,30 @@ void UndefinedFunction::init(const char* name)
 	_asm5[6] = 0x31;
 	_asm5[7] = 0xc0;
 	_asm5[8] = 0xc3;
+#elif defined(__i386__)
+	_asm1[0] = 0xb8;
+	_asm2[0] = 0x50;
+	_asm2[1] = 0xb8;
+	_asm3[0] = 0x50;
+	_asm3[1] = 0xb8;
+	_asm4[0] = 0x50;
+	_asm4[1] = 0xb8;
+	_asm5[0] = 0xff;
+	_asm5[1] = 0xd0;
+	_asm5[2] = 0x83;
+	_asm5[3] = 0xc4;
+	_asm5[4] = 0x0c;
+	_asm5[5] = 0x31;
+	_asm5[6] = 0xc0;
+	_asm5[7] = 0xc3;
+#else
+#   error Unsupported platform!
+#endif
+
+	pStderr = stderr;
+	pErrMsg = "Undefined function called: %s\n";
+	pFuncName = name;
+	pFprintf = dlsym(RTLD_DEFAULT, "fprintf");
 }
 
 #ifdef TEST

@@ -1,7 +1,7 @@
 /*
 This file is part of Darling.
 
-Copyright (C) 2012 Lubos Dolezel
+Copyright (C) 2012-2013 Lubos Dolezel
 
 Darling is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ struct UndefinedFunction
 {
 	void init(const char* name);
 
+#if defined(__x86_64__)
 	char _asm1[2];
 	void* pStderr;
 	char _asm2[2];
@@ -36,13 +37,28 @@ struct UndefinedFunction
 	const void* pFprintf;
 	char _asm5[9];
 	char padding[7]; // to 48 bytes
+#elif defined(__i386__)
+	char _asm1[1];
+	const void* pFuncName;
+	char _asm2[2];
+	const void* pErrMsg;
+	char _asm3[2];
+	const void* pStderr;
+	char _asm4[2];
+	const void* pFprintf;
+	char _asm5[8];
+	char padding[1]; // to 32 bytes
+#else
+#	error Unsupported platform!
+#endif
+
 };
 #pragma pack()
 
 class UndefMgr
 {
 public:
-	UndefMgr(int entries = 300);
+	UndefMgr(int entries = 1000);
 	~UndefMgr();
 	
 	// the name must be persistent!
